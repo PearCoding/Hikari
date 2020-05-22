@@ -1,0 +1,448 @@
+{
+    "constants": {
+        "HK_TRUE": "1",
+        "HK_FALSE": "0",
+        "HK_NULL_HANDLE": "0",
+        "HK_MAX_EXTENSION_NAME_SIZE": "32",
+        "HK_MAX_DESCRIPTION_NAME_SIZE": "128",
+        "HK_MAX_PHYSICAL_DEVICE_NAME_SIZE": "32"
+    },
+    "handles": [
+        "HkInstance",
+        "HkPhysicalDevice",
+        "HkDevice",
+        "HkQueue",
+        "HkCommandBuffer",
+        "HkCommandPool",
+        "HkSemaphore",
+        "HkFence",
+        "HkDeviceMemory",
+        "HkBuffer",
+        "HkBufferView",
+        "HkEvent",
+        "HkQueryPool"
+    ],
+    "enums": {
+        "HkResult": {
+            "entries": {
+                "HK_EVENT_RESET": 5,
+                "HK_EVENT_SET": 4,
+                "HK_NOT_READY": 3,
+                "HK_TIMEOUT": 2,
+                "HK_INCOMPLETE": 1,
+                "HK_SUCCESS": 0,
+                "HK_ERROR_OUT_OF_HOST_MEMORY": -1,
+                "HK_ERROR_OUT_OF_DEVICE_MEMORY ": -2,
+                "HK_ERROR_INITIALIZATION_FAILED": -3,
+                "HK_ERROR_MEMORY_MAP_FAILED": -4,
+                "HK_ERROR_DEVICE_LOST": -5,
+                "HK_ERROR_EXTENSION_NOT_PRESENT": -10,
+                "HK_ERROR_FEATURE_NOT_PRESENT": -11,
+                "HK_ERROR_LAYER_NOT_PRESENT": -12,
+                "HK_ERROR_INCOMPATIBLE_DRIVER": -20,
+                "HK_ERROR_TOO_MANY_OBJECTS": -21
+            }
+        },
+        "HkPhysicalDeviceType": {
+            "entries": {
+                "HK_PHYSICAL_DEVICE_TYPE_OTHER": 0,
+                "HK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU": 1,
+                "HK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU": 2,
+                "HK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU": 3,
+                "HK_PHYSICAL_DEVICE_TYPE_CPU": 4
+            },
+            "last": "HK_PHYSICAL_DEVICE_TYPE_MAX_ENUM"
+        },
+        "HkQueueFlags": {
+            "entries": {
+                "HK_QUEUE_TRACING_BIT": 1,
+                "HK_QUEUE_TRANSFER_BIT": 2,
+                "HK_QUEUE_SHADING_BIT": 4,
+                "HK_QUEUE_PROTECTED_BIT": 16
+            }
+        }
+    },
+    "structs": {
+        "HkExtensionProperties": {
+            "extensible": false,
+            "entries": {
+                "layerName": {
+                    "type": "char",
+                    "array": true,
+                    "count": "HK_MAX_EXTENSION_NAME_SIZE"
+                },
+                "specVersion": {
+                    "type": "uint32_t"
+                }
+            }
+        },
+        "HkLayerProperties": {
+            "extensible": false,
+            "entries": {
+                "layerName": {
+                    "type": "char",
+                    "array": true,
+                    "count": "HK_MAX_EXTENSION_NAME_SIZE"
+                },
+                "specVersion": {
+                    "type": "uint32_t"
+                },
+                "implementationVersion": {
+                    "type": "uint32_t"
+                },
+                "description": {
+                    "type": "char",
+                    "array": true,
+                    "count": "HK_MAX_DESCRIPTION_NAME_SIZE"
+                }
+            }
+        },
+        "HkAllocationCallbacks": {
+            "entries": {
+                "pUserData": {
+                    "type": "void",
+                    "pointer": true
+                },
+                "pAllocate": {
+                    "type": "PFN_hkAllocationFunction"
+                },
+                "pReallocate": {
+                    "type": "PFN_hkReallocationFunction"
+                },
+                "pFree": {
+                    "type": "PFN_hkFreeFunction"
+                }
+            }
+        },
+        "HkApplicationInfo": {
+            "extensible": true,
+            "entries": {
+                "pApplicationName": {
+                    "type": "void",
+                    "pointer": true,
+                    "constant": true
+                },
+                "applicationVersion": {
+                    "type": "uint32_t"
+                },
+                "pEngineName": {
+                    "type": "void",
+                    "pointer": true,
+                    "constant": true
+                },
+                "engineVersion": {
+                    "type": "uint32_t"
+                },
+                "apiVersion": {
+                    "type": "uint32_t"
+                }
+            }
+        },
+        "HkInstanceCreateInfo": {
+            "extensible": true,
+            "entries": {
+                "pApplicationInfo": {
+                    "type": "HkApplicationInfo",
+                    "pointer": true,
+                    "constant": true
+                },
+                "enabledLayerCount": {
+                    "type": "uint32_t"
+                },
+                "ppEnabledLayerNames": {
+                    "type": "char* const",
+                    "pointer": true,
+                    "constant": true
+                },
+                "enabledExtensionCount": {
+                    "type": "uint32_t"
+                },
+                "ppEnabledExtensionNames": {
+                    "type": "char* const",
+                    "pointer": true,
+                    "constant": true
+                }
+            }
+        },
+        "HkPhysicalDeviceLimits": {},
+        "HkPhysicalDeviceFeatures": {},
+        "HkPhysicalDeviceProperties": {
+            "entries": {
+                "apiVersion": {
+                    "type": "uint32_t"
+                },
+                "driverVersion": {
+                    "type": "uint32_t"
+                },
+                "vendorID": {
+                    "type": "uint32_t"
+                },
+                "deviceID": {
+                    "type": "uint32_t"
+                },
+                "deviceType": {
+                    "type": "HkPhysicalDeviceType"
+                },
+                "deviceName": {
+                    "type": "char",
+                    "array": true,
+                    "count": "HK_MAX_PHYSICAL_DEVICE_NAME_SIZE"
+                },
+                "limits": {
+                    "type": "HkPhysicalDeviceLimits"
+                },
+                "features": {
+                    "type": "HkPhysicalDeviceFeatures"
+                }
+            }
+        },
+        "HkQueueFamilyProperties": {
+            "entries": {
+                "queueFlags": {
+                    "type": "uint32_t"
+                },
+                "queueCount": {
+                    "type": "uint32_t"
+                }
+            }
+        },
+        "HkDeviceQueueCreateInfo": {
+            "extensible": true,
+            "entries": {
+                "flags": {
+                    "type": "uint32_t"
+                },
+                "queueFamilyIndex": {
+                    "type": "uint32_t"
+                },
+                "queueCount": {
+                    "type": "uint32_t"
+                },
+                "queuePriority": {
+                    "type": "float",
+                    "pointer": true,
+                    "constant": true
+                }
+            }
+        },
+        "HkDeviceCreateInfo": {
+            "extensible": true,
+            "entries": {
+                "flags": {
+                    "type": "uint32_t"
+                },
+                "queueCreateInfoCount": {
+                    "type": "uint32_t"
+                },
+                "pQueueCreateInfos": {
+                    "type": "HkDeviceQueueCreateInfo",
+                    "pointer": true,
+                    "constant": true
+                },
+                "enabledExtensionCount": {
+                    "type": "uint32_t"
+                },
+                "ppEnabledExtensionNames": {
+                    "type": "char* const",
+                    "pointer": true,
+                    "constant": true
+                },
+                "pEnabledFeatures": {
+                    "type": "HkPhysicalDeviceFeatures",
+                    "pointer": true,
+                    "constant": true
+                }
+            }
+        }
+    },
+    "functions": {
+        "hkGetInstanceProcAddr": {
+            "level": "special",
+            "return": "PFN_hkVoidFunction",
+            "params": {
+                "instance": {
+                    "type": "HkInstance"
+                },
+                "pName": {
+                    "type": "char",
+                    "pointer": true,
+                    "constant": true
+                }
+            }
+        },
+        "hkEnumerateInstanceVersion": {
+            "level": "global",
+            "return": "HkResult",
+            "params": {
+                "pApiVersion": {
+                    "type": "uint32_t",
+                    "pointer": true
+                }
+            }
+        },
+        "hkEnumerateInstanceExtensionProperties": {
+            "level": "global",
+            "return": "HkResult",
+            "params": {
+                "pPropertyCount": {
+                    "type": "uint32_t",
+                    "pointer": true
+                },
+                "pProperties": {
+                    "type": "HkExtensionProperties",
+                    "pointer": true
+                }
+            }
+        },
+        "hkEnumerateInstanceLayerProperties": {
+            "level": "global",
+            "return": "HkResult",
+            "params": {
+                "pPropertyCount": {
+                    "type": "uint32_t",
+                    "pointer": true
+                },
+                "pProperties": {
+                    "type": "HkLayerProperties",
+                    "pointer": true
+                }
+            }
+        },
+        "hkCreateInstance": {
+            "level": "global",
+            "return": "HkResult",
+            "params": {
+                "pCreateInfo": {
+                    "type": "HkInstanceCreateInfo",
+                    "pointer": true,
+                    "constant": true
+                },
+                "pAllocCalls": {
+                    "type": "HkAllocationCallbacks",
+                    "pointer": true,
+                    "constant": true
+                },
+                "pInstance": {
+                    "type": "HkInstance",
+                    "pointer": true
+                }
+            }
+        },
+        "hkDestroyInstance": {
+            "level": "instance",
+            "params": {
+                "instance": {
+                    "type": "HkInstance"
+                }
+            }
+        },
+        "hkGetDeviceProcAddr": {
+            "level": "instance",
+            "return": "PFN_hkVoidFunction",
+            "params": {
+                "device": {
+                    "type": "HkDevice"
+                },
+                "pName": {
+                    "type": "char",
+                    "pointer": true,
+                    "constant": true
+                }
+            }
+        },
+        "hkEnumeratePhysicalDevices": {
+            "level": "instance",
+            "return": "HkResult",
+            "params": {
+                "instance": {
+                    "type": "HkInstance"
+                },
+                "pPhysicalDeviceCount": {
+                    "type": "uint32_t",
+                    "pointer": true
+                },
+                "pPhysicalDevices": {
+                    "type": "HkPhysicalDevice",
+                    "pointer": true
+                }
+            }
+        },
+        "hkGetPhysicalDeviceProperties": {
+            "level": "instance",
+            "params": {
+                "physicalDevice": {
+                    "type": "HkPhysicalDevice"
+                },
+                "pProperties": {
+                    "type": "HkPhysicalDeviceProperties",
+                    "pointer": true
+                }
+            }
+        },
+        "hkGetPhysicalDeviceQueueFamilyProperties": {
+            "level": "instance",
+            "params": {
+                "physicalDevice": {
+                    "type": "HkPhysicalDevice"
+                },
+                "pQueueFamilyPropertyCount": {
+                    "type": "uint32_t",
+                    "pointer": true
+                },
+                "pQueueFamilyProperties": {
+                    "type": "HkQueueFamilyProperties",
+                    "pointer": true
+                }
+            }
+        },
+        "hkCreateDevice": {
+            "level": "instance",
+            "return": "HkResult",
+            "params": {
+                "physicalDevice": {
+                    "type": "HkPhysicalDevice"
+                },
+                "pCreateInfo": {
+                    "type": "HkDeviceCreateInfo",
+                    "pointer": true,
+                    "constant": true
+                },
+                "pAllocCalls": {
+                    "type": "HkAllocationCallbacks",
+                    "pointer": true,
+                    "constant": true
+                },
+                "pDevice": {
+                    "type": "HkDevice",
+                    "pointer": true
+                }
+            }
+        },
+        "hkDestroyDevice": {
+            "level": "device",
+            "params": {
+                "device": {
+                    "type": "HkDevice"
+                }
+            }
+        },
+        "hkGetDeviceQueue": {
+            "level": "device",
+            "params": {
+                "device": {
+                    "type": "HkDevice"
+                },
+                "queueFamilyIndex": {
+                    "type": "uint32_t"
+                },
+                "queueIndex": {
+                    "type": "uint32_t"
+                },
+                "pQueue": {
+                    "type": "HkQueue",
+                    "pointer": true
+                }
+            }
+        }
+    }
+}

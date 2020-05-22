@@ -1,0 +1,34 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+
+PROJECT(Hikari C CXX)
+
+#SETS
+SET(VENDOR "Hikari project 2019")
+SET(VERSION_MAJOR 0)
+SET(VERSION_MINOR 1)
+SET(VERSION_HEX 0x0001)
+SET(HK_Version ${VERSION_MAJOR}.${VERSION_MINOR})
+
+SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
+
+#CHECKS
+MESSAGE(STATUS "Building Hikari ${HK_Version}")
+
+cmake_policy(SET CMP0057 NEW)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+#find_package(Filesystem REQUIRED)
+find_package( PythonInterp 3 REQUIRED )
+
+include_directories(src include ${CMAKE_BINARY_DIR})
+
+add_subdirectory(tools)
+add_subdirectory(src)
+
+enable_testing()
+add_subdirectory(tests)
