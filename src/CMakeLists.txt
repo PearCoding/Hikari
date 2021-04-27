@@ -5,10 +5,12 @@ endfunction(add_gen_lib)
 
 function(add_layer TARGET SRC)
     add_gen_lib(${TARGET} ${SRC} ${ARGN})
+    add_dependencies(${TARGET} hikari)
 endfunction(add_layer)
 
 function(add_icd TARGET SRC)
     add_gen_lib(${TARGET} ${SRC} ${ARGN})
+    add_dependencies(${TARGET} hikari)
 endfunction(add_icd)
 
 SET(SRC

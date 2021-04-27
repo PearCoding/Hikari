@@ -1,18 +1,18 @@
 #include "icd.h"
 #include "instance.h"
+#include "utils.h"
 
 #include <cstdlib>
+#include <cstring>
 #include <filesystem>
 #include <iostream>
 #include <unordered_set>
-
-#include <boost/algorithm/string.hpp>
+#include <vector>
 
 #include <dlfcn.h>
 
 #define _HK_ICD_ENV_PATH_NAME "HK_ICD_PATH"
 #define _HK_ICD_LIB_PREFIX "libHK_ICD_"
-#define _HK_ENV_DELIMITER ':'
 
 static HkResult loadICD(size_t i,
 						const std::string& icdPath, HkInstance instance)
@@ -48,9 +48,9 @@ static HkResult loadICD(size_t i,
 	}
 
 	// Save information
-	HkInstanceObj* inst = get_instance(instance);
+	HkInstanceObj* inst	   = get_instance(instance);
 	inst->pICDs[i].pHandle = dll;
-	memcpy(&inst->pICDs[i].interface, &versionStruct, sizeof(versionStruct));
+	std::memcpy(&inst->pICDs[i].interface, &versionStruct, sizeof(versionStruct));
 
 	return HK_SUCCESS;
 }
@@ -62,7 +62,7 @@ static std::unordered_set<std::string> getICDsFromPath(const std::string& path)
 		if (!entry.is_regular_file())
 			continue;
 		if (entry.path().extension() == ".so"
-			&& boost::starts_with(entry.path().stem().string(), _HK_ICD_LIB_PREFIX)) {
+			&& entry.path().stem().string().rfind(_HK_ICD_LIB_PREFIX, 0) == 0) {
 			icds.emplace(entry.path().string());
 			std::cout << entry.path() << std::endl;
 		}
@@ -79,7 +79,7 @@ HkResult _hk_setup_icd(HkInstance instance,
 
 	const char* envPaths = std::getenv(_HK_ICD_ENV_PATH_NAME);
 	if (envPaths)
-		boost::split(paths, envPaths, [](char c) { return c == _HK_ENV_DELIMITER; });
+		hk_split_env(envPaths, paths);
 
 	std::unordered_set<std::string> icds;
 	for (const std::string& path : paths) {

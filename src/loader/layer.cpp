@@ -1,20 +1,21 @@
 #include "layer.h"
 #include "hk_layer.h"
 #include "instance.h"
+#include "utils.h"
 
+#include <algorithm>
 #include <cstdlib>
+#include <cstring>
 #include <filesystem>
 #include <iostream>
+#include <unordered_map>
 #include <vector>
-
-#include <boost/algorithm/string.hpp>
 
 #include <dlfcn.h>
 
 #define _HK_LAYER_ENV_NAME "HK_LAYER"
 #define _HK_LAYER_ENV_PATH_NAME "HK_LAYER_PATH"
 #define _HK_LAYER_LIB_PREFIX "libHK_LAYER_"
-#define _HK_ENV_DELIMITER ':'
 
 HkResult hkEnumerateInstanceLayerProperties_loader(
 	uint32_t* pPropertyCount,
@@ -63,7 +64,7 @@ static HkResult loadLayer(size_t i,
 	// Save information
 	HkInstanceObj* inst		 = get_instance(instance);
 	inst->pLayers[i].pHandle = dll;
-	memcpy(&inst->pLayers[i].interface, &versionStruct, sizeof(versionStruct));
+	std::memcpy(&inst->pLayers[i].interface, &versionStruct, sizeof(versionStruct));
 
 	return HK_SUCCESS;
 }
@@ -77,8 +78,8 @@ getLayersFromPath(const std::string& path,
 		if (!entry.is_regular_file())
 			continue;
 		if (entry.path().extension() == ".so"
-			&& boost::starts_with(entry.path().stem().string(), _HK_LAYER_LIB_PREFIX)) {
-			std::string plugin = boost::erase_first_copy(entry.path().stem().string(), "lib");
+			&& entry.path().stem().string().rfind(_HK_LAYER_LIB_PREFIX, 0) == 0) {
+			std::string plugin = entry.path().stem().string().erase(0, 3); // remove 'lib' from the start
 			std::cout << entry.path() << std::endl;
 			if (std::find(requestedPlugins.begin(), requestedPlugins.end(), plugin) != requestedPlugins.end()) {
 				if (layers.count(plugin)) {
@@ -109,11 +110,11 @@ HkResult _hk_setup_layer(HkInstance instance,
 
 	const char* envPaths = std::getenv(_HK_LAYER_ENV_PATH_NAME);
 	if (envPaths)
-		boost::split(paths, envPaths, [](char c) { return c == _HK_ENV_DELIMITER; });
+		hk_split_env(envPaths, paths);
 
 	const char* envLayers = std::getenv(_HK_LAYER_ENV_NAME);
 	if (envLayers)
-		boost::split(plugins, envLayers, [](char c) { return c == _HK_ENV_DELIMITER; });
+		hk_split_env(envLayers, plugins);
 
 	for (size_t i = 0; i < pCreateInfo->enabledLayerCount; ++i) {
 		const char* plugin = pCreateInfo->ppEnabledLayerNames[i];
@@ -202,7 +203,7 @@ void _hk_create_device_dispatch_chain(HkInstance instance,
 			++layer_count;
 	}
 
-	if(layer_count == 0) {
+	if (layer_count == 0) {
 		pLayerCreateInfo = HK_NULL_HANDLE;
 		return;
 	}
@@ -223,12 +224,12 @@ void _hk_create_device_dispatch_chain(HkInstance instance,
 		pLayerCreateInfo[i].u.pLayerInfo							 = (HkLayerInstanceLink*)_hk_alloc(instance, sizeof(HkLayerInstanceLink));
 		pLayerCreateInfo[i].u.pLayerInfo->pNext						 = HK_NULL_HANDLE;
 		pLayerCreateInfo[i].u.pLayerInfo->pfnNextGetInstanceProcAddr = HK_NULL_HANDLE;
-		pLayerCreateInfo[i].u.pLayerInfo->pfnNextGetDeviceProcAddr   = HK_NULL_HANDLE;
+		pLayerCreateInfo[i].u.pLayerInfo->pfnNextGetDeviceProcAddr	 = HK_NULL_HANDLE;
 
 		if (prevLinkInfo) {
 			prevLinkInfo->pNext						 = pLayerCreateInfo[i].u.pLayerInfo;
 			prevLinkInfo->pfnNextGetInstanceProcAddr = inst->pLayers[k].interface.pfnGetInstanceProcAddr;
-			prevLinkInfo->pfnNextGetDeviceProcAddr   = inst->pLayers[k].interface.pfnGetDeviceProcAddr;
+			prevLinkInfo->pfnNextGetDeviceProcAddr	 = inst->pLayers[k].interface.pfnGetDeviceProcAddr;
 		}
 
 		prevLinkInfo = pLayerCreateInfo[i].u.pLayerInfo;
